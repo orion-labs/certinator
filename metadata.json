@@ -1,0 +1,51 @@
+{
+  "name": "certinator",
+  "version": "0.1.0",
+  "package": "github.com/orion-labs/certinator",
+  "description": "Instrument Hashicorp Vault to create CA's and Certificates for Clients and Services",
+  "repository": "https://orionlabs-dbt-tools.s3.us-east-1.amazonaws.com",
+  "building": {
+    "targets": [
+      {
+        "name": "darwin/amd64"
+      },
+      {
+        "name": "linux/amd64"
+      }
+    ],
+    "extras": [
+      {
+        "template": "templates/description.tmpl",
+        "filename": "description.txt",
+        "executable": false
+      }
+    ]
+  },
+  "signing": {
+    "program": "gpg",
+    "email": "obci@orionlabs.io"
+
+  },
+  "publishing": {
+    "targets": [
+      {
+        "src": "description.txt",
+        "dst": "{{.Repository}}/{{.Name}}/{{.Version}}/description.txt",
+        "sig": true,
+        "checksums": false
+      },
+      {
+        "src": "certinator_darwin_amd64",
+        "dst": "{{.Repository}}/{{.Name}}/{{.Version}}/darwin/amd64/{{.Name}}",
+        "sig": true,
+        "checksums": false
+      },
+      {
+        "src": "certinator_linux_amd64",
+        "dst": "{{.Repository}}/{{.Name}}/{{.Version}}/linux/amd64/{{.Name}}",
+        "sig": true,
+        "checksums": false
+      }
+    ]
+  }
+}

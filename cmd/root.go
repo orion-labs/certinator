@@ -16,7 +16,6 @@ package cmd
 import (
 	"fmt"
 	homedir "github.com/mitchellh/go-homedir"
-	"github.com/orion-labs/certinator/pkg/certinator"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
@@ -32,9 +31,8 @@ var rootCmd = &cobra.Command{
 	Long: "Instrument Hashicorp Vault to create CA's and Certificates for Clients and Services",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {
-		certinator.Run()
-	},
+	//Run: func(cmd *cobra.Command, args []string) {
+	//},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

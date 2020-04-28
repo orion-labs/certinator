@@ -32,3 +32,18 @@ Create Client Certs:
         * K8S Secerts
         * PEM FIles
 
+# Commands
+* vault init
+* vault unseal
+* vault status
+
+* ca list
+* ca create <name>
+* ca delete <name>
+
+* cert create
+* cert list
+* cert revoke
+
+* crl fetch
+* crl rotate

@@ -8,6 +8,7 @@ jobs:
       - image: circleci/golang:1.12.5
     environment: GO111MODULE=on
     steps:
+      - checkout
       - run:
           name: Install Gomason
           command: go get github.com/nikogura/gomason
@@ -20,7 +21,6 @@ jobs:
             wget https://releases.hashicorp.com/vault/1.4.0/vault_1.4.0_linux_amd64.zip
             unzip vault_1.4.0_linux_amd64.zip
             sudo mv vault /usr/local/bin
-      - checkout
       - run:
           name: Run Tests
           command: gomason test -v -b ${CIRCLE_BRANCH}
@@ -30,6 +30,7 @@ jobs:
       - image: circleci/golang:1.12.5
     environment: GO111MODULE=on
     steps:
+      - checkout
       - run:
           name: Install Gomason
           command: go get github.com/nikogura/gomason
@@ -42,7 +43,6 @@ jobs:
             wget https://releases.hashicorp.com/vault/1.4.0/vault_1.4.0_linux_amd64.zip
             unzip vault_1.4.0_linux_amd64.zip
             sudo mv vault /usr/local/bin
-      - checkout
       - run:
           name: Stage Signing Key
           command: |

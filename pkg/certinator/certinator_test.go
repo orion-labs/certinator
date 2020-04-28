@@ -15,6 +15,7 @@ import (
 var tmpDir string
 var testServer *vaulttest.VaultDevServer
 var testClient *api.Client
+var testAddress string
 
 func TestMain(m *testing.M) {
 	setUp()
@@ -40,7 +41,7 @@ func setUp() {
 		log.Fatalf("unable to get a free port on which to run the test vault server: %s", err)
 	}
 
-	testAddress := fmt.Sprintf("127.0.0.1:%d", port)
+	testAddress = fmt.Sprintf("127.0.0.1:%d", port)
 	testServer = vaulttest.NewVaultDevServer(testAddress)
 
 	if !testServer.Running {
@@ -92,14 +93,27 @@ func TestCaCrud(t *testing.T) {
 		Client: testClient,
 	}
 
+	cr := CertificateIssuingRole{
+		"cert-issuer",
+		[]string{"test.com"},
+		true,
+		true,
+		true,
+		"8760h",
+		"8760h",
+	}
+
 	inputs := []struct {
 		name string
+		role CertificateIssuingRole
 	}{
 		{
 			"service",
+			cr,
 		},
 		{
 			"client",
+			cr,
 		},
 	}
 
@@ -117,7 +131,35 @@ func TestCaCrud(t *testing.T) {
 
 			assert.True(t, exists, "CA %s does not exist", i.name)
 
-			err = c.DeleteCa(i.name)
+			err = c.TuneCA(i.name)
+			if err != nil {
+				t.Errorf("failed to tune CA %s", i.name)
+			}
+
+			err = c.ConfigureCRL(i.name, testAddress)
+			if err != nil {
+				t.Errorf("failed to configure CRL for CA %s", i.name)
+			}
+
+			info, err := c.GenerateCaCert(i.name, "test.orionlabs.io", true)
+			if err != nil {
+				t.Errorf("failed to create CA certificate for %s", i.name)
+			}
+
+			assert.True(t, info.Data != nil)
+
+			if info.Data != nil {
+				assert.True(t, info.Data["private_key"] != nil, "No Private Key")
+				assert.True(t, info.Data["certificate"] != nil, "No CA Certificate")
+
+			}
+
+			err = c.CreateIssuingRole(i.name, i.role)
+			if err != nil {
+				t.Errorf("failed to create issuing role %s in CA %s", i.role.Name, i.name)
+			}
+
+			err = c.DeleteCA(i.name)
 			if err != nil {
 				t.Errorf("failed to delete CA %s", i.name)
 			}

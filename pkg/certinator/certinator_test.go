@@ -94,7 +94,7 @@ func TestCaCrud(t *testing.T) {
 	}
 
 	cr := CertificateIssuingRole{
-		"cert-issuer",
+		DEFAULT_CERTIFICATE_ROLE,
 		[]string{"test.com"},
 		true,
 		true,
@@ -104,16 +104,33 @@ func TestCaCrud(t *testing.T) {
 	}
 
 	inputs := []struct {
-		name string
-		role CertificateIssuingRole
+		name  string
+		role  CertificateIssuingRole
+		certs []CertificateRequest
 	}{
 		{
 			"service",
 			cr,
+			[]CertificateRequest{
+				{
+					"foo.test.com",
+					"",
+					"",
+					"8760",
+				},
+			},
 		},
 		{
 			"client",
 			cr,
+			[]CertificateRequest{
+				{
+					"bar.test.com",
+					"",
+					"",
+					"8760",
+				},
+			},
 		},
 	}
 
@@ -157,6 +174,16 @@ func TestCaCrud(t *testing.T) {
 			err = c.CreateIssuingRole(i.name, i.role)
 			if err != nil {
 				t.Errorf("failed to create issuing role %s in CA %s", i.role.Name, i.name)
+			}
+
+			certs, err := c.CreateCerts(i.name, i.certs)
+			if err != nil {
+				t.Errorf("failed to create certs %s", err)
+			}
+
+			for cn, cert := range certs {
+				assert.True(t, cert.PrivateKey != "", "Cert for %s has no private key!", cn)
+				assert.True(t, cert.Certificate != "", "Cert for %s has no certificate", cn)
 			}
 
 			err = c.DeleteCA(i.name)

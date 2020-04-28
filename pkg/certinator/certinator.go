@@ -1,6 +1,7 @@
 package certinator
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/vault/api"
 	"github.com/pkg/errors"
@@ -9,8 +10,7 @@ import (
 const DEFAULT_SERVICE_CA = "service"
 const DEFAULT_CLIENT_CA = "client"
 const DEFAULT_CA_MAX_LEASE = "43800h0m0s"
-const DEFAULT_SERVICE_ROLE = "service-issuer"
-const DEFAULT_CLIENT_ROLE = "client-issuer"
+const DEFAULT_CERTIFICATE_ROLE = "cert-issuer"
 
 type Config struct {
 	ServiceCaName string   `json:"service_ca_name"`
@@ -28,6 +28,17 @@ type CertificateIssuingRole struct {
 	MaxTTL     string
 	Ttl        string
 }
+
+type CertInfo struct {
+	IssuingCA      string
+	PrivateKey     string
+	PrivateKeyType string
+	SerialNumber   string
+	Certificate    string
+	Expiration     int64
+}
+
+type CertificateBundle map[string]CertInfo
 
 type Certinator struct {
 	Client *api.Client
@@ -199,6 +210,61 @@ func (c *Certinator) CreateIssuingRole(caName string, role CertificateIssuingRol
 	return err
 }
 
+// CertificateRequest  Struct for keeping track of a certificate that will be created.  Definitely NOT a CSR.
+type CertificateRequest struct {
+	CommonName string
+	Sans       string
+	IpSans     string
+	Ttl        string
+}
+
+func (c *Certinator) CreateCerts(caName string, requests []CertificateRequest) (certs CertificateBundle, err error) {
+
+	certs = make(map[string]CertInfo)
+
+	for _, r := range requests {
+		data := map[string]interface{}{
+			"common_name": r.CommonName,
+			"ttl":         r.Ttl,
+		}
+
+		if r.IpSans != "" {
+			data["ip_sans"] = r.IpSans
+		}
+
+		if r.Sans != "" {
+			data["alt_names"] = r.Sans
+		}
+
+		path := fmt.Sprintf("%s/issue/%s", caName, DEFAULT_CERTIFICATE_ROLE)
+
+		secret, err := c.Client.Logical().Write(path, data)
+		if err != nil {
+			err = errors.Wrapf(err, "failed creating certificate for %s on service CA", r.CommonName)
+			return certs, err
+		}
+
+		if secret != nil {
+			if secret.Data != nil {
+				exp, err := secret.Data["expiration"].(json.Number).Int64()
+				if err != nil {
+					err = errors.Wrapf(err, "failed converting %v to int64", secret.Data["expiration"])
+				}
+				certs[r.CommonName] = CertInfo{
+					IssuingCA:      secret.Data["issuing_ca"].(string),
+					PrivateKey:     secret.Data["private_key"].(string),
+					PrivateKeyType: secret.Data["private_key_type"].(string),
+					SerialNumber:   secret.Data["serial_number"].(string),
+					Certificate:    secret.Data["serial_number"].(string),
+					Expiration:     exp,
+				}
+			}
+		}
+	}
+
+	return certs, err
+}
+
 func (c *Certinator) InitVault() (err error) {
 	// TODO implement and test InitVault
 	return err
@@ -222,7 +288,7 @@ Init:
     write root token to disk
     write unseal keys to disk
 
-    create CA's for
+Create CA's for:
         * Services
         * Clients
 

@@ -1,7 +1,9 @@
 package certinator
 
 import (
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"github.com/pkg/errors"
 )
@@ -53,10 +55,72 @@ func (c *Certinator) CreateCerts(caName string, requests []CertificateRequest) (
 	return certs, err
 }
 
-func (c *Certinator) ListCerts() (err error) {
-	return err
+func (c *Certinator) ListCerts(caName string) (certs []string, err error) {
+	// Have to query vault for serial numbers (vault won't give out CN's)
+	path := fmt.Sprintf("%s/certs", caName)
+
+	serials := make([]string, 0)
+
+	secret, err := c.Client.Logical().List(path)
+	if err != nil {
+		err = errors.Wrapf(err, "failed listing certs on %s", caName)
+		return certs, err
+	}
+
+	if secret != nil {
+		if secret.Data != nil {
+			s, ok := secret.Data["keys"].([]interface{})
+			if ok {
+				for _, n := range s {
+					sn, ok := n.(string)
+					if ok {
+						serials = append(serials, sn)
+					}
+				}
+			}
+		}
+	}
+
+	certs = make([]string, 0)
+
+	// Then we pull the cert from Vault by SN and read it to find it's CN.
+	for _, sn := range serials {
+		path := fmt.Sprintf("%s/cert/%s", caName, sn)
+		secret, err := c.Client.Logical().Read(path)
+		if err != nil {
+			err = errors.Wrapf(err, "failed listing certs on %s", caName)
+			return certs, err
+		}
+
+		if secret != nil {
+			if secret.Data != nil {
+				// pull out the data
+				p, ok := secret.Data["certificate"].(string)
+				if ok {
+					// pull out the data from the PEM
+					block, _ := pem.Decode([]byte(p))
+					if block == nil {
+						err = errors.New(fmt.Sprintf("failed decoding PEM for certificate serial %s", sn))
+						return certs, err
+					}
+					// Parse the data into a certificate
+					cert, err := x509.ParseCertificate(block.Bytes)
+					if err != nil {
+						err = errors.Wrapf(err, "failed parsing certificate for SN %s", sn)
+						return certs, err
+					}
+
+					// pull out the CN on the cert, add it to the list.
+					certs = append(certs, cert.Subject.CommonName)
+				}
+			}
+		}
+	}
+
+	return certs, err
 }
 
 func (c *Certinator) RevokeCert(cn string, ca string) (err error) {
+	// TODO implement RevokeCert
 	return err
 }

@@ -87,3 +87,17 @@ func TestVaultSealed(t *testing.T) {
 
 	assert.False(t, ok, "Vault is sealed")
 }
+
+func TestVaultStatus(t *testing.T) {
+	c := Certinator{
+		Client: testClient,
+	}
+
+	status, err := c.VaultStatus()
+	if err != nil {
+		t.Errorf("failed checking vault seal: %s", err)
+	}
+
+	assert.True(t, status != nil, "Nil Vault Status!")
+
+}

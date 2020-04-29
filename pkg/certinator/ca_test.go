@@ -53,7 +53,7 @@ func TestCaCrud(t *testing.T) {
 
 	for _, i := range inputs {
 		t.Run(i.name, func(t *testing.T) {
-			err := c.CreateCa(i.name)
+			err := c.CreateCA(i.name)
 			if err != nil {
 				t.Errorf("failed to create %s", i.name)
 			}
@@ -115,6 +115,20 @@ func TestCaCrud(t *testing.T) {
 				t.Errorf("error rotating crl: %s", err)
 			}
 
+			cas, err := c.ListCAs()
+			if err != nil {
+				t.Errorf("error listing CA's: %s", err)
+			}
+
+			assert.True(t, len(cas) > 0, "Cannot list CA's!")
+
+			fetchedCerts, err := c.ListCerts(i.name)
+			if err != nil {
+				t.Errorf("error listing certs: %s", err)
+			}
+
+			assert.True(t, len(fetchedCerts) > 0, "Fetched no certs!")
+
 			err = c.DeleteCA(i.name)
 			if err != nil {
 				t.Errorf("failed to delete CA %s", i.name)
@@ -125,7 +139,6 @@ func TestCaCrud(t *testing.T) {
 				t.Errorf("failed to check if %s CA exists", i.name)
 			}
 			assert.False(t, exists, "CA %s exists", i.name)
-
 		})
 	}
 }

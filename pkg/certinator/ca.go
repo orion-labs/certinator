@@ -7,30 +7,25 @@ import (
 )
 
 func (c *Certinator) CaExists(name string) (ok bool, err error) {
-	path := "sys/mounts"
-	secret, err := c.Client.Logical().Read(path)
+	mountName := fmt.Sprintf("%s/", name)
+	cas, err := c.ListCAs()
 	if err != nil {
-		err = errors.Wrapf(err, "failed to read %s", path)
+		err = errors.Wrapf(err, "failed checking for existance of CA %s", name)
+		return ok, err
 	}
 
-	mountName := fmt.Sprintf("%s/", name)
-
-	for k, v := range secret.Data {
-		if k == mountName {
-			d, ok := v.(map[string]interface{})
-			if ok {
-				if d["type"] == "pki" {
-					ok = true
-					return ok, err
-				}
-			}
+	for _, ca := range cas {
+		if ca == mountName {
+			ok = true
+			return ok, err
 		}
 	}
+
 	return ok, err
 }
 
-// CreateCa  Creates a CA.  Equivalent of running 'vault secrets enable -path=<name> -description="<description" -max-lease-ttl=43800h pki'
-func (c *Certinator) CreateCa(name string) (err error) {
+// CreateCA  Creates a CA.  Equivalent of running 'vault secrets enable -path=<name> -description="<description" -max-lease-ttl=43800h pki'
+func (c *Certinator) CreateCA(name string) (err error) {
 	config := map[string]interface{}{
 		"options":           nil,
 		"default_lease_ttl": "0s",
@@ -53,6 +48,26 @@ func (c *Certinator) CreateCa(name string) (err error) {
 	}
 
 	return err
+}
+
+func (c *Certinator) ListCAs() (cas []string, err error) {
+	cas = make([]string, 0)
+	path := "sys/mounts"
+	secret, err := c.Client.Logical().Read(path)
+	if err != nil {
+		err = errors.Wrapf(err, "failed to read %s", path)
+	}
+
+	for k, v := range secret.Data {
+		d, ok := v.(map[string]interface{})
+		if ok {
+			if d["type"] == "pki" {
+				cas = append(cas, k)
+			}
+		}
+	}
+
+	return cas, err
 }
 
 // TuneCA Tunes the CA.  Equivalent of running 'vault secrets tune -max-lease-ttl=43800h <name>'

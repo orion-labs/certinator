@@ -34,6 +34,14 @@ List Certificate Authorities
 			log.Fatalf("error listing CA's: %s", err)
 		}
 
-		fmt.Printf("CA's:\n%s.\n", cas)
+		if len(cas) == 0 {
+			fmt.Printf("No configured Certificate Authorities.\n")
+			return
+		}
+
+		fmt.Printf("Certificate Authorities:\n")
+		for _, ca := range cas {
+			fmt.Printf("  %s\n", ca)
+		}
 	},
 }

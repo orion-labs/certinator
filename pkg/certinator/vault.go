@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 )
 
 const VAULT_TOKEN_ENV_VAR = "VAULT_TOKEN"
@@ -176,6 +177,10 @@ func UseFSToken(client *api.Client, verbose bool) (ok bool, err error) {
 		}
 
 		token := string(b)
+
+		// chomp
+		token = strings.TrimRight(token, "\n")
+
 		client.SetToken(token) // set token
 
 		if token == "" {

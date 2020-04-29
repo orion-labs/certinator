@@ -25,7 +25,7 @@ Create a Certificate Authority
 
 		if len(args) > 0 {
 			if caName == "" {
-				caName = args[1]
+				caName = args[0]
 			}
 		}
 

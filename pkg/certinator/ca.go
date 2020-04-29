@@ -58,11 +58,15 @@ func (c *Certinator) ListCAs() (cas []string, err error) {
 		err = errors.Wrapf(err, "failed to read %s", path)
 	}
 
-	for k, v := range secret.Data {
-		d, ok := v.(map[string]interface{})
-		if ok {
-			if d["type"] == "pki" {
-				cas = append(cas, k)
+	if secret != nil {
+		if secret.Data != nil {
+			for k, v := range secret.Data {
+				d, ok := v.(map[string]interface{})
+				if ok {
+					if d["type"] == "pki" {
+						cas = append(cas, k)
+					}
+				}
 			}
 		}
 	}

@@ -103,6 +103,18 @@ func TestCaCrud(t *testing.T) {
 				assert.True(t, cert.Certificate != "", "Cert for %s has no certificate", cn)
 			}
 
+			crlPem, err := c.FetchCRL(i.name)
+			if err != nil {
+				t.Errorf("error: %s", err)
+			}
+
+			assert.True(t, len(crlPem) != 0, "No crl fetched!")
+
+			err = c.RotateCRL(i.name)
+			if err != nil {
+				t.Errorf("error rotating crl: %s", err)
+			}
+
 			err = c.DeleteCA(i.name)
 			if err != nil {
 				t.Errorf("failed to delete CA %s", i.name)

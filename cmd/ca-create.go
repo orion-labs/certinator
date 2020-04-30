@@ -29,6 +29,7 @@ Create a Certificate Authority
 			log.Fatalf("Error creating Certinator: %s", err)
 		}
 
+		// TODO provide for configuring issuing role via dialog
 		// this works as a crude start, but should be configurable in the future.
 		standardIssuingRole := certinator.CertificateIssuingRole{
 			Name:       "cert-issuer",
@@ -56,6 +57,7 @@ Create a Certificate Authority
 			log.Fatalf("failed to tune CA %s", caName)
 		}
 
+		// TODO provide for configuring CA Address by flag and dialog
 		if caCAAddress == "" {
 			// crl only works from within the cluster
 			caCAAddress = fmt.Sprintf("http://vault.orion.svc.cluster.local/v1/%s/config/crl", caName)
@@ -66,11 +68,13 @@ Create a Certificate Authority
 			log.Fatalf("failed to configure CRL for CA %s", caName)
 		}
 
+		// TODO provide for configuraing CA CN via flag and dialog
 		if caCN == "" {
 			// default CN based on CA name
 			caCN = fmt.Sprintf("%s.orion-ptt.orion.svc.cluster.local", caName)
 		}
 
+		// TODO add option to export CA private key
 		info, err := c.GenerateCaCert(caName, caCN, false)
 		if err != nil {
 			log.Fatalf("failed to create CA certificate for %s", caName)

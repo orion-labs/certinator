@@ -94,6 +94,7 @@ func ExampleCertificateRequestFile() string {
 		"ip_sans": "192.168.0.1,192.168.0.2,192.168.0.3",
 		"ttl": "8760h"
 	}
+]
 `
 }
 

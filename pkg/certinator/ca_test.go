@@ -129,6 +129,13 @@ func TestCaCrud(t *testing.T) {
 
 			assert.True(t, len(fetchedCerts) > 0, "Fetched no certs!")
 
+			for _, cert := range i.certs {
+				err = c.RevokeCert(cert.CommonName, i.name)
+				if err != nil {
+					t.Errorf("failed revoking certificate %s: %s", cert.CommonName, err)
+				}
+			}
+
 			err = c.DeleteCA(i.name)
 			if err != nil {
 				t.Errorf("failed to delete CA %s", i.name)

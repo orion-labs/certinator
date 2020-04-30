@@ -28,7 +28,13 @@ Revoke Certificates
 
 		if len(args) > 0 {
 			if caName == "" {
-				caName = args[1]
+				caName = args[0]
+			}
+		}
+
+		if len(args) > 1 {
+			if revokeCN == "" {
+				revokeCN = args[1]
 			}
 		}
 

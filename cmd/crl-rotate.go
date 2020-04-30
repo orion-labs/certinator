@@ -23,6 +23,16 @@ Rotate Certificate Revocation List
 			log.Fatalf("Error creating Certinator: %s", err)
 		}
 
+		if len(args) > 0 {
+			if caName == "" {
+				caName = args[0]
+			}
+		}
+
+		if caName == "" {
+			log.Fatalf("Must specify CA name to fetch CRL.\nTry again with -c <ca name> or `certinator crl fetch <ca name>`.\n")
+		}
+
 		err = c.RotateCRL(caName)
 		if err != nil {
 			log.Fatalf("Error fetching CRL: %s", err)

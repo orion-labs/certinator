@@ -21,3 +21,5 @@ require (
 	golang.org/x/text v0.0.0-20171227012246-e19ae1496984
 	gopkg.in/yaml.v2 v2.0.0-20171116090243-287cf08546ab
 )
+
+go 1.13

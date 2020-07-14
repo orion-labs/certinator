@@ -6,15 +6,21 @@ import (
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
+	"regexp"
+	"strings"
 )
 
 var caCAAddress string
 var caCN string
+var caExportKey bool
+var caIssuingDomains string
 
 func init() {
 	CaCmd.AddCommand(CaCreateCmd)
 	CaCreateCmd.Flags().StringVarP(&caCAAddress, "address", "a", "", "Public-ish address for the CA (used for configuring CRL's)")
 	CaCreateCmd.Flags().StringVarP(&caCN, "name", "n", "", "Common Name for the CA Certificate")
+	CaCreateCmd.Flags().BoolVarP(&caExportKey, "export", "e", false, "Export CA Private Key")
+	CaCreateCmd.Flags().StringVarP(&caIssuingDomains, "issuedomains", "d", "", "Allowed domains for certificate issuance.  Comma separated list.  e.g.: 'foo.com,bar.com'")
 }
 
 var CaCreateCmd = &cobra.Command{
@@ -29,11 +35,24 @@ Create a Certificate Authority
 			log.Fatalf("Error creating Certinator: %s", err)
 		}
 
+		domains := make([]string, 0)
+
+		if caIssuingDomains == "" {
+			domains = append(domains, "orion.svc.cluster.local")
+		} else {
+			commaRegex := regexp.MustCompile(`.+,.+`)
+			if commaRegex.MatchString(caIssuingDomains) {
+				domains = strings.Split(caIssuingDomains, ",")
+			} else {
+				domains = append(domains, caIssuingDomains)
+			}
+		}
+
 		// TODO provide for configuring issuing role via dialog
 		// this works as a crude start, but should be configurable in the future.
 		standardIssuingRole := certinator.CertificateIssuingRole{
 			Name:       "cert-issuer",
-			Domains:    []string{"orion.svc.cluster.local"},
+			Domains:    domains,
 			Subdomains: true,
 			IpSans:     false,
 			Localhost:  false,
@@ -75,7 +94,7 @@ Create a Certificate Authority
 		}
 
 		// TODO add option to export CA private key
-		info, err := c.GenerateCaCert(caName, caCN, false)
+		info, err := c.GenerateCaCert(caName, caCN, caExportKey)
 		if err != nil {
 			log.Fatalf("failed to create CA certificate for %s", caName)
 		}
@@ -86,7 +105,7 @@ Create a Certificate Authority
 		}
 
 		caFile := fmt.Sprintf("%s-ca.crt", caName)
-		// TODO Provide for exporting private keys
+		caKeyFile := fmt.Sprintf("%s-ca.key", caName)
 
 		if info != nil {
 			if info.Data != nil {
@@ -100,7 +119,23 @@ Create a Certificate Authority
 					log.Fatalf("failed to write file %s", caFile)
 				}
 
-				fmt.Printf("CA %s created.\n", caName)
+				if caExportKey {
+					caKeyData, ok := info.Data["private_key"].(string)
+					if !ok {
+						log.Fatalf("Can't unmarshal ca private key data.")
+					}
+
+					err = ioutil.WriteFile(caKeyFile, []byte(caKeyData), 0600)
+					if err != nil {
+						log.Fatalf("failed to write file %s", caKeyFile)
+					}
+				}
+
+				fmt.Printf("CA %s created.\n  CA Certificate written to %s\n", caName, caFile)
+
+				if caExportKey {
+					fmt.Printf("  CA Private Key writen to %s\n", caKeyFile)
+				}
 
 				return
 			}

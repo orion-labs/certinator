@@ -73,7 +73,9 @@ You will need to export VAULT_ADDR='http://127.0.0.1:8200' into your environnmen
 
 You will also need to take the value for Root Token `s.e4vegH8GHtNOhe1ooVcqzYBx` in the above example, and write it into a file named `~/.vault-token`.  
 
-That file must contain a single line, with only the value supplied by the vault server command.  (It’ll be different every time you run vault server -dev.
+That file must contain a single line, with only the value supplied by the vault server command.  
+
+*N.B. It’ll be different every time you run vault server -dev.*
 
 
 ## Test Vault Connection to Server

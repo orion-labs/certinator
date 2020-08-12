@@ -65,7 +65,7 @@ Much text will scroll by.   Look for something like this:
     seal/unseal the Vault or re-authenticate.
 
     Unseal Key: t26Rv5VAEUGpP1tXkcANuVKELeozPfrw3ztQKGiUiCg=
-    jRoot Token: s.e4vegH8GHtNOhe1ooVcqzYBx
+    Root Token: s.e4vegH8GHtNOhe1ooVcqzYBx
 
     Development mode should NOT be used in production installations!
     

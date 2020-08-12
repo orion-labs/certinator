@@ -2,7 +2,7 @@
 
 Instrument Hashicorp Vault to create CA's and Certificates for Clients and Services
 
-Connect to Vault via VAULT_ADDR
+Connect to Vault via `VAULT_ADDR`, using token in `~/.vault-token`.
 
 # Commands
 

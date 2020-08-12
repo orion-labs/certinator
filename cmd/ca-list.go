@@ -29,6 +29,15 @@ List Certificate Authorities
 			}
 		}
 
+		roottoken, err := c.UsingRootToken()
+		if err != nil {
+			log.Fatalf("failed checking own token: %s", err)
+		}
+
+		if roottoken {
+			fmt.Print("You are currently using the root token.  You should not be doing this unless it's really necessary.\n\n")
+		}
+
 		cas, err := c.ListCAs()
 		if err != nil {
 			log.Fatalf("error listing CA's: %s", err)

@@ -6,8 +6,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const DEFAULT_SERVICE_CA = "service"
-const DEFAULT_CLIENT_CA = "client"
 const DEFAULT_CA_MAX_LEASE = "43800h0m0s"
 const DEFAULT_CERTIFICATE_ROLE = "cert-issuer"
 
@@ -97,6 +95,34 @@ func ExampleCertificateRequestFile() string {
 ]
 `
 }
+
+func (c *Certinator) UsingRootToken() (ok bool, err error) {
+	secret, err := c.Client.Logical().Read("auth/token/lookup-self")
+	if err != nil {
+		err = errors.Wrapf(err, "failed to look up own token")
+		return ok, err
+	}
+
+	if secret != nil {
+		if secret.Data != nil {
+			policies := secret.Data["policies"]
+			policy, t := policies.([]interface{})
+			if t {
+				p, t := policy[0].(string)
+				if t {
+					if p == "root" {
+						ok = true
+						return ok, err
+					}
+				}
+			}
+		}
+	}
+
+	return ok, err
+}
+
+// TODO add new ca to certinator policy when a new CA is created
 
 /*
 

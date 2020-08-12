@@ -29,6 +29,15 @@ List Certificates
 			}
 		}
 
+		roottoken, err := c.UsingRootToken()
+		if err != nil {
+			log.Fatalf("failed checking own token: %s", err)
+		}
+
+		if roottoken {
+			fmt.Print("You are currently using the root token.  You should not be doing this unless it's really necessary.\n\n")
+		}
+
 		certs, err := c.ListCerts(caName)
 		if err != nil {
 			log.Fatalf("error listing certificates on CA %s: %s", caName, err)

@@ -23,6 +23,15 @@ Rotate Certificate Revocation List
 			log.Fatalf("Error creating Certinator: %s", err)
 		}
 
+		roottoken, err := c.UsingRootToken()
+		if err != nil {
+			log.Fatalf("failed checking own token: %s", err)
+		}
+
+		if roottoken {
+			fmt.Print("You are currently using the root token.  You should not be doing this unless it's really necessary.\n\n")
+		}
+
 		if len(args) > 0 {
 			if caName == "" {
 				caName = args[0]

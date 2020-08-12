@@ -29,6 +29,15 @@ Delete a Certificate Authority
 			}
 		}
 
+		roottoken, err := c.UsingRootToken()
+		if err != nil {
+			log.Fatalf("failed checking own token: %s", err)
+		}
+
+		if !roottoken {
+			fmt.Print("Cannot delete a CA without using the root token.  Get the root token from 1password, and please be sure to remove it from your filesystem as soon as you're done.\n\n")
+		}
+
 		err = c.DeleteCA(caName)
 		if err != nil {
 			log.Fatalf("error deleting CA %s: %s", caName, err)

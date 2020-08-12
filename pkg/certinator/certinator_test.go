@@ -101,3 +101,16 @@ func TestVaultStatus(t *testing.T) {
 	assert.True(t, status != nil, "Nil Vault Status!")
 
 }
+
+func TestUsingRootToken(t *testing.T) {
+	c := Certinator{
+		Client: testClient,
+	}
+
+	root, err := c.UsingRootToken()
+	if err != nil {
+		t.Errorf("Error checking my own token: %s\n", err)
+	}
+
+	assert.True(t, root, "Not using root token")
+}

@@ -66,6 +66,15 @@ Create a Certificate Authority
 			}
 		}
 
+		roottoken, err := c.UsingRootToken()
+		if err != nil {
+			log.Fatalf("failed checking own token: %s", err)
+		}
+
+		if !roottoken {
+			fmt.Print("Cannot create a CA without using the root token.  Get the root token from 1password, and please be sure to remove it from your filesystem as soon as you're done.\n\n")
+		}
+
 		err = c.CreateCA(caName)
 		if err != nil {
 			log.Fatalf("error creating CA %s: %s", caName, err)

@@ -42,7 +42,7 @@ https://www.vaultproject.io/downloads
 
 Install it, and make sure you can run vault from the command line.
 
-If you’re on a Mac, you can run brew install vault.
+If you’re on a Mac, you can run: `brew install vault`.
 
 
 ## Start Vault Server in Dev Mode

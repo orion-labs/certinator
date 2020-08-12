@@ -128,7 +128,7 @@ You should see the following files in the directory in which you ran the command
 
 ## Create a Wildcard Certificate 
 
-#### Command: certinator cert create -c onprem -n *.example.net -t 8760h
+#### Command: certinator cert create -c onprem -n *.example.com -t 8760h
 
 #### Output: 
 
@@ -144,3 +144,22 @@ You should see the following files in the directory in which you ran the command
     *.example.com.crt
 
     *.example.com.key
+    
+## Create a Normal Certificate
+
+#### Command: certinator cert create -c onprem -n foo.example.com -t 8760h
+
+#### Output: 
+
+    You are currently using the root token.  You should not be doing this unless it's really necessary.
+    
+(That’s just a warning.  You can ignore it when you’re working in dev mode)
+
+
+#### Additional Outputs:
+
+You should see the following files in the directory in which you ran the command:
+
+    foo.example.com.crt
+
+    foo.example.com.key

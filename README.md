@@ -81,7 +81,7 @@ That file must contain a single line, with only the value supplied by the vault 
 ## Test Vault Connection to Server
 If the above is correct, you should be able to run the following commands with success:
 
-#### Command: vault status
+#### Command: `vault status`
 
 #### Output: 
 
@@ -97,7 +97,7 @@ If the above is correct, you should be able to run the following commands with s
     Cluster ID      39026b8b-15f7-2711-1cb3-6bfc7cc841ed
     HA Enabled      false
 
-#### Command: vault secrets list
+#### Command: `vault secrets list`
 
 #### Output:
 
@@ -110,7 +110,7 @@ If the above is correct, you should be able to run the following commands with s
 
 ## Create a CA
 
-#### Command: certinator ca create -n onprem -e -d example.com,*.example.com onprem
+#### Command: `certinator ca create -n onprem -e -d example.com,*.example.com onprem`
 
 #### Output:
 
@@ -128,7 +128,7 @@ You should see the following files in the directory in which you ran the command
 
 ## Create a Wildcard Certificate 
 
-#### Command: certinator cert create -c onprem -n *.example.com -t 8760h
+#### Command: `certinator cert create -c onprem -n *.example.com -t 8760h`
 
 #### Output: 
 
@@ -151,7 +151,7 @@ You should see the following files in the directory in which you ran the command
     
 ## Create a Normal Certificate
 
-#### Command: certinator cert create -c onprem -n foo.example.com -t 8760h
+#### Command: `certinator cert create -c onprem -n foo.example.com -t 8760h`
 
 #### Output: 
 

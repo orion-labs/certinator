@@ -75,7 +75,7 @@ You will also need to take the value for Root Token `s.e4vegH8GHtNOhe1ooVcqzYBx`
 
 That file must contain a single line, with only the value supplied by the vault server command.  
 
-*N.B. It’ll be different every time you run vault server -dev.*
+*N.B. It’ll be different every time you run `vault server -dev`.*
 
 
 ## Test Vault Connection to Server

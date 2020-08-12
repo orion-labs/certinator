@@ -53,11 +53,11 @@ From the command line, run:
 
 Much text will scroll by.   Look for something like this:
 
-WARNING! dev mode is enabled! In this mode, Vault runs entirely in-memory
-and starts unsealed with a single unseal key. The root token is already
-authenticated to the CLI, so you can immediately begin using Vault.
+    WARNING! dev mode is enabled! In this mode, Vault runs entirely in-memory
+    and starts unsealed with a single unseal key. The root token is already
+    authenticated to the CLI, so you can immediately begin using Vault.
 
-You may need to set the following environment variable:
+    You may need to set the following environment variable:
 
     $ export VAULT_ADDR='http://127.0.0.1:8200'
 

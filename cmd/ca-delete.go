@@ -5,6 +5,7 @@ import (
 	"github.com/orion-labs/certinator/pkg/certinator"
 	"github.com/spf13/cobra"
 	"log"
+	"os"
 )
 
 func init() {
@@ -36,6 +37,7 @@ Delete a Certificate Authority
 
 		if !roottoken {
 			fmt.Print("Cannot delete a CA without using the root token.  Get the root token from 1password, and please be sure to remove it from your filesystem as soon as you're done.\n\n")
+			os.Exit(1)
 		}
 
 		err = c.DeleteCA(caName)

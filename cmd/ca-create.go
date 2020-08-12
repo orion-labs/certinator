@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 )
@@ -73,6 +74,7 @@ Create a Certificate Authority
 
 		if !roottoken {
 			fmt.Print("Cannot create a CA without using the root token.  Get the root token from 1password, and please be sure to remove it from your filesystem as soon as you're done.\n\n")
+			os.Exit(1)
 		}
 
 		err = c.CreateCA(caName)

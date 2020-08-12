@@ -134,6 +134,10 @@ You should see the following files in the directory in which you ran the command
 
     You are currently using the root token.  You should not be doing this unless it's really necessary.
     
+    Files Written:
+      *.example.com.crt
+      *.example.com.key
+    
 (That’s just a warning.  You can ignore it when you’re working in dev mode)
 
 
@@ -152,6 +156,10 @@ You should see the following files in the directory in which you ran the command
 #### Output: 
 
     You are currently using the root token.  You should not be doing this unless it's really necessary.
+    
+    Files Written:
+      bar.example.com.crt
+      bar.example.com.key
     
 (That’s just a warning.  You can ignore it when you’re working in dev mode)
 

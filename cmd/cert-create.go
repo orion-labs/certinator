@@ -130,6 +130,8 @@ NB: TTL's are in seconds unless a unit suffix is supplied.  i.e. 8760 seconds.  
 			if err != nil {
 				log.Fatalf("err writing private key file %s: %s", keyFileName, err)
 			}
+
+			fmt.Printf("Files Written:\n  %s\n  %s\n\n", certFileName, keyFileName)
 		}
 	},
 }

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "package": "github.com/orion-labs/certinator",
   "description": "Instrument Hashicorp Vault to create CA's and Certificates for Clients and Services",
-  "repository": "https://dbt.orionlabs.io/dbt-tools",
+  "repository": "https://dbt.orionlabs.io",
   "building": {
     "targets": [
       {

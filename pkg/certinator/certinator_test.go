@@ -16,8 +16,8 @@ package certinator
 import (
 	"fmt"
 	"github.com/hashicorp/vault/api"
+	"github.com/nikogura/vaulttest/pkg/vaulttest"
 	"github.com/phayes/freeport"
-	"github.com/scribd/vaulttest/pkg/vaulttest"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"log"
@@ -26,7 +26,7 @@ import (
 )
 
 var tmpDir string
-var testServer *vaulttest.VaultDevServer
+var testServer *vaulttest.VaultServer
 var testClient *api.Client
 var testAddress string
 
@@ -55,10 +55,10 @@ func setUp() {
 	}
 
 	testAddress = fmt.Sprintf("127.0.0.1:%d", port)
-	testServer = vaulttest.NewVaultDevServer(testAddress)
+	testServer = vaulttest.NewVaultServer(testAddress)
 
 	if !testServer.Running {
-		testServer.ServerStart()
+		testServer.DevServerStart()
 		testClient = testServer.VaultTestClient()
 
 	}

@@ -60,11 +60,11 @@ Revoke Certificates
 			}
 		}
 
-		err = c.RevokeCert(revokeCN, caName)
+		serials, err := c.RevokeCert(revokeCN, caName)
 		if err != nil {
 			log.Fatalf("error revoking certificate %s in CA %s: %s", revokeCN, caName, err)
 		}
 
-		fmt.Printf("Certificate %s deleted.\n", revokeCN)
+		fmt.Printf("%d certificate(s) for CN %q revoked.\n", len(serials), revokeCN)
 	},
 }

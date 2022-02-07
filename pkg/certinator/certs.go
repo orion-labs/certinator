@@ -133,16 +133,18 @@ func (c *Certinator) ListCerts(caName string) (certs []string, err error) {
 	return certs, err
 }
 
-func (c *Certinator) RevokeCert(cn string, ca string) (err error) {
+func (c *Certinator) RevokeCert(cn string, ca string) (revoked []string, err error) {
+	fmt.Printf("Revoking certs with CN %q in CA %q.\n", cn, ca)
 	// revoke can only be done via serial number, which we rarely know.
 	// get all the serial numbers
 	path := fmt.Sprintf("%s/certs", ca)
 	serials := make([]string, 0)
+	revoked = make([]string, 0)
 
 	secret, err := c.Client.Logical().List(path)
 	if err != nil {
 		err = errors.Wrapf(err, "failed listing certs on %s", ca)
-		return err
+		return revoked, err
 	}
 
 	if secret != nil {
@@ -165,7 +167,7 @@ func (c *Certinator) RevokeCert(cn string, ca string) (err error) {
 		secret, err := c.Client.Logical().Read(path)
 		if err != nil {
 			err = errors.Wrapf(err, "failed reading cert %s on %s", sn, ca)
-			return err
+			return revoked, err
 		}
 
 		if secret != nil {
@@ -177,13 +179,13 @@ func (c *Certinator) RevokeCert(cn string, ca string) (err error) {
 					block, _ := pem.Decode([]byte(p))
 					if block == nil {
 						err = errors.New(fmt.Sprintf("failed decoding PEM for certificate serial %s", sn))
-						return err
+						return revoked, err
 					}
 					// Parse the data into a certificate
 					cert, err := x509.ParseCertificate(block.Bytes)
 					if err != nil {
 						err = errors.Wrapf(err, "failed parsing certificate for SN %s", sn)
-						return err
+						return revoked, err
 					}
 
 					// if the CN matches the one we're looking for
@@ -197,15 +199,15 @@ func (c *Certinator) RevokeCert(cn string, ca string) (err error) {
 						_, err := c.Client.Logical().Write(path, data)
 						if err != nil {
 							err = errors.Wrapf(err, "failed revoking cert with CN %s Serial Number %s", cn, sn)
-							return err
+							return revoked, err
 						}
 
-						return err
+						revoked = append(revoked, sn)
 					}
 				}
 			}
 		}
 	}
 
-	return err
+	return revoked, err
 }

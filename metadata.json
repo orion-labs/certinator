@@ -1,6 +1,6 @@
 {
   "name": "certinator",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "package": "github.com/orion-labs/certinator",
   "description": "Instrument Hashicorp Vault to create CA's and Certificates for Clients and Services",
   "repository": "https://orionlabs-dbt-tools.s3.us-east-1.amazonaws.com",

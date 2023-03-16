@@ -64,7 +64,7 @@ workflows:
       - test:
           context:
             - AWS-COMMON
-            # - AWS-CIRCLECI
+            - AWS-CIRCLECI
           filters:
             branches:
               ignore:
@@ -72,7 +72,7 @@ workflows:
       - publish:
           context:
             - AWS-COMMON
-            # - AWS-CIRCLECI
+            - AWS-CIRCLECI
           filters:
             branches:
               only:
